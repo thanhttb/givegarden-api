@@ -206,6 +206,16 @@ class UserController extends Controller
         $user->save();
 
     }
-    
+    protected function createTestUser(){
+        $input= [
+            "name" => "Tran Thanh",
+            "email" => "givegarden@gmail.com",
+            "password" => Hash::make('123456'),
+            "phone" => "0985951181",
+            "role" => "admin",
+            "active" => 1,
+        ];
+        User::create($input);
+    }
 
 }

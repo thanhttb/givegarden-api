@@ -18,6 +18,6 @@ use App\Http\Controllers\UserController;
 Route::get('/test', function(){
     return 'success';
 });
-Route::get('/create-user', [UserController::class, 'create']);
+Route::get('/create-user', [UserController::class, 'createTestUser']);
 // Route::get('/admin-login', [UserController::class, 'adminLogin']);
 // Route::post('/login', [UserController::class, 'login']);
