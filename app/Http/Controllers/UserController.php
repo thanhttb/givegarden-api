@@ -59,7 +59,7 @@ class UserController extends Controller
     }
     protected function get(Request $request){
         $user = auth()->user()->id;
-        $user = User::find($user->id);
+        $user = User::find($user);
         return response()->json($user);
     }
 
