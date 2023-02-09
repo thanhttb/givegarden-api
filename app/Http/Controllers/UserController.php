@@ -133,6 +133,7 @@ class UserController extends Controller
         $user->update($update);
         return response()->json([
             'status_code' => 200,
+            'user' => $user
         ]); 
 
     }
