@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Auth;
 use Hash;
+use Crypt;
 class UserController extends Controller
 {
     //
@@ -85,9 +86,10 @@ class UserController extends Controller
             if (!Hash::check($request->password, $user->password, [])) {
                 throw new \Exception('Error in Login');
             }
-
+            
+            // $tokenResult = Crypt::encrypt(base64_encode($user->createToken('authToken')->plainTextToken));
             $tokenResult = $user->createToken('authToken')->plainTextToken;
-
+            
             return response()->json([
                 'status_code' => 200,
                 'access_token' => $tokenResult,
