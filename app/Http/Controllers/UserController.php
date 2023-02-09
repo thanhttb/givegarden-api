@@ -57,7 +57,11 @@ class UserController extends Controller
 
         
     }
-    
+    protected function get(Request $request){
+        $user = auth()->user()->id;
+        $user = User::find($user->id);
+        return response()->json($user);
+    }
 
     protected function login(Request $request){
         try {
