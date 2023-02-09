@@ -122,19 +122,14 @@ class UserController extends Controller
             ]);
         }
         $user = User::find($request->id);
-        $update = request(['email', 'fullname', 'role', 'phone']);
+        $update = request(['email', 'name', 'role', 'phone']);
         if(!$user){
             return response()->json([
                 'status_code' => 500,
                 'message' => 'Unauthorized'
             ]); 
         }
-        if(!$this->isAdmin($user)){
-            return response()->json([
-                'status_code' => 401,
-                'message' => 'Unauthorized'
-            ]);
-        }
+        
         $user->update($update);
         return response()->json([
             'status_code' => 200,
