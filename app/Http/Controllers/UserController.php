@@ -10,6 +10,9 @@ use Crypt;
 class UserController extends Controller
 {
     //
+    protected function checkAuth(){
+        
+    }
     protected function isAdmin(User $user){
         if($user->role == 'admin'){
             return true;
@@ -58,9 +61,14 @@ class UserController extends Controller
         
     }
     protected function get(Request $request){
-        $user = auth()->user()->id;
-        $user = User::find($user);
-        return response()->json($user);
+        if (Auth::check()) {
+            return response()->json(Auth::user());
+        } else {
+            return false;
+        }
+        // $user = auth()->user()->id;
+        // $user = User::find($user);
+        // return response()->json($user);
     }
 
     protected function login(Request $request){
