@@ -45,8 +45,8 @@ class GroupController extends Controller
         $group['expired_at'] = date('Y-m-d', strtotime($request->expired_at));
 
         $group = Group::create($group);
-        $group->coaches()->sync($request->coaches);
-        $group->users()->sync($request->users);
+        // $group->coaches()->syncWithoutDetach($request->coaches);
+        $group->users()->sync(array_merge($request->users, $request->coaches));
         
         $result = $group;
         $result['coaches'] = $group->coaches;
@@ -67,8 +67,7 @@ class GroupController extends Controller
             $group->title = $request->title;
             $group->expired_at = date('Y-m-d', strtotime($request->expired_at));
             $group->save();
-            $group->coaches()->sync($request->coaches);
-            $group->users()->sync($request->users);
+            $group->users()->sync(array_merge($request->users, $request->coaches));
             $result = $group;
             $result['coaches'] = $group->coaches;
             $result['users'] = $group->users;
