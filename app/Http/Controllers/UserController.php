@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Group;
 use Auth;
 use Hash;
 use Crypt;
@@ -217,6 +218,22 @@ class UserController extends Controller
         $user->save();
 
     }
+
+    protected function getCoach(){
+        $coaches = User::whereIn('role', ['admin', 'coach'])->get();
+        return response()->json($coaches);
+    }
+    protected function getAvailableUser(){
+        $users = User::where('role', 'user')->get();
+        $result = [];
+        foreach($users as $u){
+            if($u->groups()->count() == 0){
+                $result[] = $u;
+            }
+        }
+        return response()->json($result);
+    }
+    //
     protected function createTestUser(){
         $input= [
             "name" => "Tran Thanh",

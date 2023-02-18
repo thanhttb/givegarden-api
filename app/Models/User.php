@@ -26,6 +26,9 @@ class User extends Authenticatable
         'phone',
     ];
 
+    public function groups(){
+        return $this->belongsToMany('App\Models\Group', 'user_group', 'user_id', 'group_id');
+    }
     /**
      * The attributes that should be hidden for serialization.
      *

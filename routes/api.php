@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\GroupController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -26,5 +28,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/users/deactive', [UserController::class, 'deactive']);
     Route::post('/users/reactive', [UserController::class, 'reactive']);
     Route::post('/users/reset-password', [UserController::class, 'resetPassword']);
+
+    Route::get('/users/coaches', [UserController::class, 'getCoach']);
+    Route::get('/users/available-users', [UserController::class, 'getAvailableUser']);
     // Route::post('/users/create')
+
+//Group
+    Route::get('/groups', [GroupController::class, 'get']);
+    Route::post('/groups/create', [GroupController::class, 'create']);
+    Route::post('/groups/edit', [GroupController::class, 'edit']);
+    Route::post('/groups/deactivate', [GroupController::class, 'deactivate']);
 });
