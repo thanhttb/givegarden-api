@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GroupController;
-
+use App\Http\Controllers\PostController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,4 +38,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/groups/create', [GroupController::class, 'create']);
     Route::post('/groups/edit', [GroupController::class, 'edit']);
     Route::post('/groups/deactivate', [GroupController::class, 'deactivate']);
+//Post
+    Route::post('/posts/create', [PostController::class, 'create']);
 });
