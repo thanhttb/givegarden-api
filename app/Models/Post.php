@@ -13,4 +13,10 @@ class Post extends Model
     protected $casts = [
         'images' => 'array'
     ];
+    public function comments(){
+        return $this->hasMany('App\Models\PostComment', 'post_id', 'id');
+    }
+    public function reactions(){
+        return $this->hasMany('App\Models\PostReaction', 'post_id', 'id');
+    }
 }

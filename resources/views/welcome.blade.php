@@ -19,6 +19,21 @@
                 font-family: 'Nunito', sans-serif;
             }
         </style>
+        <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+        <script>
+
+            // Enable pusher logging - don't include this in production
+            Pusher.logToConsole = true;
+
+            var pusher = new Pusher('dea0c336dd5f06fc9292', {
+            cluster: 'mt1'
+            });
+
+            var channel = pusher.subscribe('community-feed');
+            channel.bind('new-post', function(data) {
+            alert(JSON.stringify(data));
+            });
+        </script>
     </head>
     <body class="antialiased">
         <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">

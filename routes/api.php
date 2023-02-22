@@ -38,6 +38,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/groups/create', [GroupController::class, 'create']);
     Route::post('/groups/edit', [GroupController::class, 'edit']);
     Route::post('/groups/deactivate', [GroupController::class, 'deactivate']);
+
+    Route::post('/groups/index', [GroupController::class, 'index']);
+    
 //Post
+    Route::post('/posts/get-community', [PostController::class, 'getCommunity']);
     Route::post('/posts/create', [PostController::class, 'create']);
 });

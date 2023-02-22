@@ -12,12 +12,13 @@ use App\Http\Controllers\UserController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+Route::get('/', function () {
+    return view('welcome');
+});
 Route::get('/test', function(){
     return 'success';
 });
 Route::get('/create-user', [UserController::class, 'createTestUser']);
+// Route::get('/test-feed', )
 // Route::get('/admin-login', [UserController::class, 'adminLogin']);
 // Route::post('/login', [UserController::class, 'login']);

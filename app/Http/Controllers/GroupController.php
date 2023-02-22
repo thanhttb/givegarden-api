@@ -17,6 +17,16 @@ class GroupController extends Controller
             return false;
         }
     }
+    protected function index(Request $request){
+        $this->validate($request, ['id' => 'required']);
+
+        $group = Group::find($request->id);
+        if($group){
+            $user = $group->users()->orderBy('level', 'DESC')->limit(3);
+            $group->top_user = $user;
+        }
+        return response()->json($group);
+    }
     protected function get(){
         if(!$this->isAdmin()){
             return response()->json([
