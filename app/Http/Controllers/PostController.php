@@ -50,7 +50,7 @@ class PostController extends Controller
         event(new NewPost($post));
     }
     protected function getCommunity(Request $request){
-        $this->validate($request, ['group_id' => 'required']);
+        // $this->validate($request, ['group_id' => 'required']);
 
         $posts = Post::where('group_id', $request->group_id)->orderBy('created_at', 'DESC')->get();
         foreach($posts as &$p){

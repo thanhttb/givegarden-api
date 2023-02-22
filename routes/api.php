@@ -42,6 +42,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/groups/index', [GroupController::class, 'index']);
     
 //Post
-    Route::post('/posts/get-community', [PostController::class, 'getCommunity']);
+    Route::post('/posts/community', [PostController::class, 'getCommunity']);
     Route::post('/posts/create', [PostController::class, 'create']);
 });
