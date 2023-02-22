@@ -14,6 +14,9 @@ class PostController extends Controller
     protected function create(Request $request){
         $this->validate($request, [
             'image' => 'image|mimes:jpg,png,jpeg,gif,svg|max:4024',
+            'content' => 'required',
+            'type' => 'required',
+            
         ]);
         $user = User::find(auth()->user()->id);
         $group = $user->groups()->first();
