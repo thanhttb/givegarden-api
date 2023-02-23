@@ -39,7 +39,8 @@ class PostController extends Controller
         $images=array();
         for ($i=0; $i < $request->image_length; $i++) { 
             # code...
-            if($files=$request->file('image_'.$i)){
+            $j = $i+1;
+            if($files=$request->file('image_'.$j)){
                 $image_path = $files->store('image', 'public');
                 $images[]=$image_path;
             }
@@ -47,18 +48,82 @@ class PostController extends Controller
         $post->images = $images;
         $post->save();
 
-        event(new NewPost($post));
+
+        //Return post
+        $comments = $post->comments()->get();
+        foreach($comments as &$c){
+            $user = User::find($c->user_id);
+            
+            $c->user_fullname = $user->fullname;
+            $c->user_avatar = $user->avatar;
+            $c->user_level = $user->level;
+
+        }
+        $post->post_reactions = $post->reactions;
+        event(new NewPost($post, $comments, $post->reactions()->get()));
     }
     protected function getCommunity(Request $request){
         // $this->validate($request, ['group_id' => 'required']);
 
         $posts = Post::where('group_id', $request->group_id)->orderBy('created_at', 'DESC')->get();
         foreach($posts as &$p){
-            $p->comments = $p->comments;
+            $comments = $p->comments;
+            foreach($comments as &$c){
+                $user = User::find($c->user_id);
+                
+                $c->user_fullname = $user->fullname;
+                $c->user_avatar = $user->avatar;
+                $c->user_level = $user->level;
+
+            }
+            $p->comments = $comments;
             $p->reactions = $p->reactions;
             $user = User::find($p->user_id);
             $p->user = $user;
         }
         return response()->json($posts);
+    }
+
+    protected function createComment(Request $request){
+        $this->validate($request, ['post_id' => 'required', 'content' => 'required']);
+        
+        $post = Post::find($request->post_id);
+        $input['user_id'] = auth()->user()->id;
+        $input['content'] = $request->content;
+        $input['post_id'] = $request->post_id;
+        $comment = PostComment::create($input);
+        $comments = $post->comments()->get();
+        foreach($comments as &$c){
+            $user = User::find($c->user_id);
+            
+            $c->user_fullname = $user->fullname;
+            $c->user_avatar = $user->avatar;
+            $c->user_level = $user->level;
+
+        }
+        // print_r($comments->toArray());
+        // $post->post_reactions = $post->reactions()->get();
+        // return response()->json($post);
+        event(new NewPost($post, $comments, $post->reactions()->get()));
+    }
+
+    protected function createReaction(Request $request){
+        $this->validate($request, ['post_id' => 'required']);
+        
+        $post = Post::find($request->post_id);
+        $input['user_id'] = auth()->user()->id;
+        $input['post_id'] = $request->post_id;
+        PostReaction::create($input);
+
+        $comments = $post->comments()->get();
+        foreach($comments as &$c){
+            $user = User::find($c->user_id);
+            
+            $c->user_fullname = $user->fullname;
+            $c->user_avatar = $user->avatar;
+            $c->user_level = $user->level;
+
+        }
+        event(new NewPost($post, $comments, $post->reactions()->get()));
     }
 }

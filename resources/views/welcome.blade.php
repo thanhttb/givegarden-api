@@ -29,7 +29,7 @@
             cluster: 'mt1'
             });
 
-            var channel = pusher.subscribe('community-feed');
+            var channel = pusher.subscribe('community-feed-1');
             channel.bind('new-post', function(data) {
             alert(JSON.stringify(data));
             });

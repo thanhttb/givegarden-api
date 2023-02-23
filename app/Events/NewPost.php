@@ -16,16 +16,20 @@ class NewPost implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $post;
+    public $post_comments;
+    public $post_reactions;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Post $post)
+    public function __construct(Post $post, $post_comments, $post_reactions)
     {
         //
         
         $this->post = $post;
+        $this->post_comments = $post_comments;
+        $this->post_reactions = $post_reactions;
     }
 
     /**
@@ -39,7 +43,7 @@ class NewPost implements ShouldBroadcast
         return new Channel('community-feed-'.$this->post->group_id);
         // return ['my-channel'];
     }
-    public function broadcastAs(){
-        return 'new-post';
-    }
+    // public function broadcastAs(){
+    //     return 'new-post';
+    // }
 }

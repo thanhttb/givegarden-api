@@ -22,7 +22,7 @@ class GroupController extends Controller
 
         $group = Group::find($request->id);
         if($group){
-            $user = $group->users()->orderBy('level', 'DESC')->limit(3);
+            $user = $group->users()->orderBy('level', 'DESC')->limit(3)->get();
             $group->top_user = $user;
         }
         return response()->json($group);

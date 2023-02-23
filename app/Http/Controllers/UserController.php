@@ -102,7 +102,12 @@ class UserController extends Controller
             
             // $tokenResult = Crypt::encrypt(base64_encode($user->createToken('authToken')->plainTextToken));
             $tokenResult = $user->createToken('authToken')->plainTextToken;
-            
+            $group = $user->groups()->first();
+            if($group){
+                $user->group_id = $group->id;
+            }else{
+                $user->group_id = NULL;
+            }
             return response()->json([
                 'status_code' => 200,
                 'access_token' => $tokenResult,
