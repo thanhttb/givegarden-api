@@ -276,7 +276,7 @@ class UserController extends Controller
                 $user->save;
             }
             else{
-                return response()->json('Mật khẩu mới không trùng khớp.')
+                return response()->json('Mật khẩu mới không trùng khớp.');
             }
         }
         if($files=$request->file('avatar')){
