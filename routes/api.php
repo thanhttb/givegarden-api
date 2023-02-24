@@ -31,6 +31,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('/users/coaches', [UserController::class, 'getCoach']);
     Route::get('/users/available-users', [UserController::class, 'getAvailableUser']);
+    Route::post('/users/profile', [UserController::class, 'updateProfile']);
+
     // Route::post('/users/create')
 
 //Group
@@ -46,4 +48,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/posts/create', [PostController::class, 'create']);
     Route::post('/posts/comment', [PostController::class, 'createComment']);
     Route::post('/posts/reaction', [PostController::class, 'createReaction']);
+
 });

@@ -113,7 +113,12 @@ class PostController extends Controller
         $post = Post::find($request->post_id);
         $input['user_id'] = auth()->user()->id;
         $input['post_id'] = $request->post_id;
-        PostReaction::create($input);
+        $check_exist = PostReaction::where('user_id', $input['user_id'])->where('post_id', $input['post_id'])->first();
+        if($check_exist){
+            $check_exist->forceDelete();
+        }else{
+            PostReaction::create($input);
+        }
 
         $comments = $post->comments()->get();
         foreach($comments as &$c){

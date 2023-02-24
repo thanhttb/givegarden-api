@@ -258,7 +258,7 @@ class UserController extends Controller
         User::create($input);
     }
 
-    protected function updateUser(Request $request){
+    protected function updateProfile(Request $request){
         $this->validate($request, [
             'email' => 'required',
             
@@ -281,8 +281,10 @@ class UserController extends Controller
         }
         if($files=$request->file('avatar')){
             $image_path = $files->store('avatar', 'public');
-            $image = $image_path;
+            $user->avatar = $image_path;
+            $user->save();
         }
+        
 
 
     }
