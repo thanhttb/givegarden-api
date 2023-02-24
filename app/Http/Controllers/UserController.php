@@ -63,7 +63,14 @@ class UserController extends Controller
     }
     protected function get(Request $request){
         if (Auth::check()) {
-            return response()->json(Auth::user());
+            $user = Auth::user();
+            $group = $user->groups()->first();
+            if($group){
+                $user->group_id = $group->id;
+            }else{
+                $user->group_id = NULL;
+            }
+            return response()->json($user);
         } else {
             return false;
         }
@@ -251,4 +258,32 @@ class UserController extends Controller
         User::create($input);
     }
 
+    protected function updateUser(Request $request){
+        $this->validate($request, [
+            'email' => 'required',
+            
+        ]);
+        #Update new password
+        $user = User::find(auth()->user()->id)->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+        ]);
+        #Update Password
+        if($request->new_password){
+            if($request->new_password_confirmation == $request->new_password){
+                $user->password = Hash::make($request->new_password);
+                $user->save;
+            }
+            else{
+                return response()->json('Mật khẩu mới không trùng khớp.')
+            }
+        }
+        if($files=$request->file('avatar')){
+            $image_path = $files->store('avatar', 'public');
+            $image = $image_path;
+        }
+
+
+    }
 }

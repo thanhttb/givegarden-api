@@ -25,6 +25,7 @@ class User extends Authenticatable
         'active',
         'phone',
         'level',
+        'avatar'
     ];
 
     public function groups(){

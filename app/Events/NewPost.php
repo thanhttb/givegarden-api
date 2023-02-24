@@ -43,7 +43,7 @@ class NewPost implements ShouldBroadcast
         return new Channel('community-feed-'.$this->post->group_id);
         // return ['my-channel'];
     }
-    // public function broadcastAs(){
-    //     return 'new-post';
-    // }
+    public function broadcastAs(){
+        return 'update-feed';
+    }
 }
