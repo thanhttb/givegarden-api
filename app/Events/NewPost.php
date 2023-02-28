@@ -40,8 +40,8 @@ class NewPost implements ShouldBroadcast
     public function broadcastOn()
     {
         // return new PrivateChannel('channel-name');
-        return new Channel('community-feed-'.$this->post->group_id);
-        // return ['my-channel'];
+        // return new Channel('community-feed-'.$this->post->group_id);
+        return ['community-feed-'.$this->post->group_id];
     }
     public function broadcastAs(){
         return 'update-feed';

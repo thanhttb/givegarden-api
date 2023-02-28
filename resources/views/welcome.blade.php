@@ -19,7 +19,7 @@
                 font-family: 'Nunito', sans-serif;
             }
         </style>
-        <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+        <!-- <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
         <script>
 
             // Enable pusher logging - don't include this in production
@@ -33,7 +33,7 @@
             channel.bind('new-post', function(data) {
             alert(JSON.stringify(data));
             });
-        </script>
+        </script> -->
     </head>
     <body class="antialiased">
         <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
@@ -143,5 +143,13 @@
                 </div>
             </div>
         </div>
+        <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
+        <script>
+            var socket = io('http://localhost:6001')
+            socket.on('givegarden_database_community-feed:update-feed', function(data){
+                console.log(data)
+            })
+        </script>
     </body>
 </html>
