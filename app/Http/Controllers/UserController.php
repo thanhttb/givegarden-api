@@ -48,7 +48,7 @@ class UserController extends Controller
             'name' => 'required',
         ]);
 
-        $new_user = request(['email', 'name', 'phone', 'role']);
+        $new_user = request(['email', 'name', 'phone', 'role', 'country_code']);
         $password = 123456;
         $new_user['password'] = Hash::make($password);
         $user = User::create($new_user);

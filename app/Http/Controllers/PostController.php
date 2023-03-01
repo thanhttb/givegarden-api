@@ -65,9 +65,13 @@ class PostController extends Controller
     }
     protected function getCommunity(Request $request){
         // $this->validate($request, ['group_id' => 'required']);
+        $user = auth()->user()->id;
 
         $posts = Post::where('group_id', $request->group_id)->orderBy('created_at', 'DESC')->get();
         foreach($posts as &$p){
+            $check_reaction = PostReation::where('post_id', $p->id)->where('user_id', $user)->first();
+            $p->liked = false;
+            if($check_reaction) $p->liked = true;
             $comments = $p->comments;
             foreach($comments as &$c){
                 $user = User::find($c->user_id);
@@ -87,6 +91,7 @@ class PostController extends Controller
 
     protected function createComment(Request $request){
         $this->validate($request, ['post_id' => 'required', 'content' => 'required']);
+        $user = auth()->user()->id;
         
         $post = Post::find($request->post_id);
         $input['user_id'] = auth()->user()->id;
@@ -94,6 +99,9 @@ class PostController extends Controller
         $input['post_id'] = $request->post_id;
         $comment = PostComment::create($input);
         $comments = $post->comments()->get();
+        $check_reaction = PostReation::where('post_id', $p->id)->where('user_id', $user)->first();
+        $post->liked = false;
+        if($check_reaction) $post->liked = true;
         foreach($comments as &$c){
             $user = User::find($c->user_id);
             
@@ -111,7 +119,8 @@ class PostController extends Controller
 
     protected function createReaction(Request $request){
         $this->validate($request, ['post_id' => 'required']);
-        
+        $user = auth()->user()->id;
+
         $post = Post::find($request->post_id);
         $input['user_id'] = auth()->user()->id;
         $input['post_id'] = $request->post_id;
@@ -121,7 +130,9 @@ class PostController extends Controller
         }else{
             PostReaction::create($input);
         }
-
+        $check_reaction = PostReation::where('post_id', $p->id)->where('user_id', $user)->first();
+        $post->liked = false;
+        if($check_reaction) $post->liked = true;
         $comments = $post->comments()->get();
         foreach($comments as &$c){
             $user = User::find($c->user_id);
