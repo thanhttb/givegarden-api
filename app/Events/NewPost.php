@@ -16,8 +16,8 @@ class NewPost implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $post;
-    public $post_comments;
-    public $post_reactions;
+    public $comments;
+    public $reactions;
     /**
      * Create a new event instance.
      *
