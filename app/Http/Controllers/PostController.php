@@ -57,6 +57,7 @@ class PostController extends Controller
             $c->user_fullname = $user->fullname;
             $c->user_avatar = $user->avatar;
             $c->user_level = $user->level;
+            $c->user_avatar = $user->avatar;
 
         }
         $post->post_reactions = $post->reactions;
@@ -99,6 +100,7 @@ class PostController extends Controller
             $c->user_fullname = $user->fullname;
             $c->user_avatar = $user->avatar;
             $c->user_level = $user->level;
+            $c->user_avatar = $user->avatar;
 
         }
         // print_r($comments->toArray());
@@ -127,7 +129,7 @@ class PostController extends Controller
             $c->user_fullname = $user->fullname;
             $c->user_avatar = $user->avatar;
             $c->user_level = $user->level;
-
+            $c->user_avatar = $user->avatar;
         }
         event(new NewPost($post, $comments, $post->reactions()->get()));
     }

@@ -28,8 +28,8 @@ class NewPost implements ShouldBroadcast
         //
         
         $this->post = $post;
-        $this->post_comments = $post_comments;
-        $this->post_reactions = $post_reactions;
+        $this->comments = $post_comments;
+        $this->reactions = $post_reactions;
     }
 
     /**

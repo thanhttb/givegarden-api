@@ -264,8 +264,9 @@ class UserController extends Controller
             
         ]);
         #Update new password
-        $user = User::find(auth()->user()->id)->update([
-            'name' => $request->name,
+        $user = User::find(auth()->user()->id);
+        $user->update([
+            'name' => ($request->name)?$request->name:"John Doe",
             'email' => $request->email,
             'phone' => $request->phone,
         ]);
@@ -279,13 +280,15 @@ class UserController extends Controller
                 return response()->json('Mật khẩu mới không trùng khớp.');
             }
         }
-        if($files=$request->file('avatar')){
+        // if($request->avatar){
+        //     echo "test";
+        // }
+        if($request->file('avatar')){
+            // return response()->json('success');
+            $files=$request->file('avatar');
             $image_path = $files->store('avatar', 'public');
             $user->avatar = $image_path;
             $user->save();
         }
-        
-
-
     }
 }
