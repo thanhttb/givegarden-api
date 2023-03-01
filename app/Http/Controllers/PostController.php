@@ -99,7 +99,7 @@ class PostController extends Controller
         $input['post_id'] = $request->post_id;
         $comment = PostComment::create($input);
         $comments = $post->comments()->get();
-        $check_reaction = PostReaction::where('post_id', $p->id)->where('user_id', $user)->first();
+        $check_reaction = PostReaction::where('post_id', $post->id)->where('user_id', $user)->first();
         $post->liked = false;
         if($check_reaction) $post->liked = true;
         foreach($comments as &$c){
@@ -130,7 +130,7 @@ class PostController extends Controller
         }else{
             PostReaction::create($input);
         }
-        $check_reaction = PostReaction::where('post_id', $p->id)->where('user_id', $user)->first();
+        $check_reaction = PostReaction::where('post_id', $post->id)->where('user_id', $user)->first();
         $post->liked = false;
         if($check_reaction) $post->liked = true;
         $comments = $post->comments()->get();
