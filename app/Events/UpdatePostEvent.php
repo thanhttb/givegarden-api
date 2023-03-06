@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use App\Models\Post;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -11,13 +10,10 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class NewPost implements ShouldBroadcast
+class UpdatePostEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
     public $post;
-    // public $comments;
-    // public $reactions;
     /**
      * Create a new event instance.
      *
@@ -41,9 +37,9 @@ class NewPost implements ShouldBroadcast
     {
         // return new PrivateChannel('channel-name');
         // return new Channel('community-feed-'.$this->post->group_id);
-        return ['community-feed-'.$this->post['group_id']];
+        return ['community-feed-'.$this->post['id']];
     }
     public function broadcastAs(){
-        return 'update-feed';
+        return 'update-post';
     }
 }

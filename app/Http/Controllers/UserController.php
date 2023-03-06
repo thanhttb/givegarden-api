@@ -287,7 +287,7 @@ class UserController extends Controller
             // return response()->json('success');
             $files=$request->file('avatar');
             $image_path = $files->store('avatar', 'public');
-            $user->avatar = $image_path;
+            $user->avatar = 'https://api.givegarden.fitness/public/storage/'.$image_path;
             $user->save();
         }
     }

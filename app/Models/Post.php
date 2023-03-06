@@ -19,4 +19,7 @@ class Post extends Model
     public function reactions(){
         return $this->hasMany('App\Models\PostReaction', 'post_id', 'id');
     }
+    // public function liked(){
+    //     return false;
+    // }
 }

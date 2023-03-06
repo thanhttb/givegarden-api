@@ -19,13 +19,11 @@ redis.psubscribe("*", function(err, count){
 
 })
 redis.on('pmessage', function(partner, channel, message){
-    console.log(channel)
-    console.log(message)
-    console.log(partner)
+  
 
     message = JSON.parse(message)
     
     io.emit(channel+":"+message.event, message.data)
-    console.log(channel+":"+message.event)
-    console.log('sent')
+    // console.log(message.data)
+    
 })
