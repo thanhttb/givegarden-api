@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Group;
 use Auth;
 use Hash;
+use Mail;
 use Crypt;
 class UserController extends Controller
 {
@@ -29,8 +30,23 @@ class UserController extends Controller
                 'message' => 'Unauthorized'
             ]);
         }
+        $users = User::all();
+        $result = [];
+        foreach($users as $key => $user){
+            $user->uid = $user->country_code."-".sprintf("%06d",$user->id);
+            $groups = $user->groups()->select('groups.title', 'groups.open_at', 'groups.expired_at')->get()->toArray();
+            // print_r($groups);
+            $result[] = $user->toArray();
+            $result[$key]['group_name'] = [];
+            $result[$key]['group_date'] = [];
+            foreach($groups as $g){
+                $result[$key]['group_name'][] = $g['title'];
+                $result[$key]['group_date'][] = date('d/m/Y', strtotime($g['open_at'])).'-'.date('d/m/Y', strtotime($g['expired_at']));
+            }
+            // $user->groups = $groups;
+        }
         return response()->json([
-            'data' => User::all(),
+            'data' => $result,
         ]);
     }
     protected function create(Request $request){
@@ -53,8 +69,8 @@ class UserController extends Controller
         $new_user['password'] = Hash::make($password);
         $user = User::create($new_user);
         // $password = rand(100000,999999);
-        
-        $user->save();
+        $user->groups()->attach($request->groups);
+        // $user->save();
         return response()->json($user);
 
         //Send Email
@@ -78,7 +94,131 @@ class UserController extends Controller
         // $user = User::find($user);
         // return response()->json($user);
     }
+    protected function sendOtp(Request $request){
+        $request->validate([
+            'email' => 'email|required',
+            // 'password' => 'required'
+        ]);
+        $user = User::where('email', $request->email)->first();
+        if($user->role != 'admin'){
+            return response()->json('Only Admin Can Login');
+        }else{
+            $data = [];
+            Mail::send('emails.mailEvent', $data ,function($message) {
+                $message->from('noreply@givegarden.info', 'GiveGarden');
+                $message->to('tranthanhsma@gmail.com', 'ThanhNT');
+                $message->subject('Sendgrid Testing');
+            });
+            return response()->json('Mail Send Successfully');
+        }
+    }
+    protected function checkCooldown(Request $request){
+        $rules = ['email' => 'required', 'sent_at' => 'required'];
+        $this->validate($request, $rules);
 
+        $user = User::where('email', $request->email)->first();
+        if ($user) {
+            if ($user->sent_at) {
+                $cooldown = strtotime($request->sent_at) - strtotime($user->sent_at);
+                if ($cooldown < 200) {
+                    return response()->json($cooldown);
+                }
+            }
+        }
+        return response()->json(false);
+    }
+
+    protected function verifyEmail(Request $request){
+        $rules = ['email' => 'required',
+            'sent_at' => 'required'];
+        $this->validate($request, $rules);
+
+        //Verify Recapcha
+        // $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+        //     'secret' => '6LcXZ2EaAAAAAJAWI_CwJP8O6rBdn7G3lCryhuOg',
+        //     // 'secret' => '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe',
+        //     'response' => $request->captcha,
+        // ]);
+        // if(! $response['success']) return response()->json('Mã Captcha không hợp lệ', 403);
+        //Check phone number
+        $user = User::where('email', $request->email)->first();
+        if($user->role != 'admin'){
+            return response()->json('Only Admin Can Login');
+        }else{
+            $sent_at = strtotime($request->sent_at);
+            //Check thời gian cooldown
+            if( $user->sent_at ){
+                if( $sent_at - strtotime($user->sent_at) < 200){
+                    return response()->json('Mã OTP chưa hết hiệu lực', 413);
+                }
+            }
+            $otp = rand(1000,9999);
+            
+            $data = [$otp];
+            Mail::send('emails.mailEvent', ['otp' => $otp] ,function($message) use($user) {
+                $message->from('noreply@givegarden.info', 'GiveGarden');
+                $message->to($user->email, $user->fullname);
+                $message->subject('GiveGarden Login OTP');
+            });
+            $user->otp = $otp;
+            $user->sent_at = date('Y-m-d h:i:s', $sent_at);
+            $user->save();
+            return response()->json('Đã gửi mã otp, vui lòng kiểm tra Email', 200);
+            // try {
+            //     Mail::send('emails.mailEvent', ['otp' => $otp] ,function($message) use($user) {
+            //         $message->from('noreply@givegarden.info', 'GiveGarden');
+            //         $message->to($user->email, $user->fullname);
+            //         $message->subject('GiveGarden Login OTP');
+            //     });
+            //     $user->otp = $otp;
+            //     $user->sent_at = date('Y-m-d h:i:s', $sent_at);
+            //     $user->save();
+            //     return response()->json('Đã gửi mã otp, vui lòng kiểm tra Email', 200);
+
+            // } catch (\Throwable $th) {
+            //     //throw $th;
+            //     return response()->json('Mail Send Unsuccessfully');
+            // }
+            
+            
+        }
+    }
+    public function verifyOtp(Request $request){
+        $rules = ['otp' => 'required', 'email'=>'required'];
+        $this->validate($request, $rules);
+
+        //OTP verified
+        $user = User::where('email', $request->email)->first();
+
+        if($user->otp == $request->otp){
+            $user->otp = null;
+            $user->sent_at = null;
+            $user->save();
+            Auth::loginUsingId($user->id);
+            if($user->password){
+                $tokenResult = $user->createToken('authToken')->plainTextToken;
+                $group = $user->groups()->first();
+                if($group){
+                    $user->group_id = $group->id;
+                }else{
+                    $user->group_id = NULL;
+                }
+                return response()->json([
+                    'status_code' => 200,
+                    'access_token' => $tokenResult,
+                    'token_type' => 'Bearer',
+                    'user' => $user,
+                ]);
+            }
+            else{
+                return response()->json(['cp' => '203']);
+            }
+        }else{
+
+            return response(['message' => 'Mã OTP không đúng vui lòng thử lại.']);
+        }
+
+    }
     protected function login(Request $request){
         try {
             $request->validate([
@@ -143,6 +283,7 @@ class UserController extends Controller
             ]);
         }
         $user = User::find($request->id);
+        
         $update = request(['email', 'name', 'role', 'phone']);
         if(!$user){
             return response()->json([
@@ -233,17 +374,30 @@ class UserController extends Controller
 
     protected function getCoach(){
         $coaches = User::whereIn('role', ['admin', 'coach'])->get();
+        foreach($coaches as $user){
+            $user->uid = $user->country_code."-".sprintf("%06d",$user->id);
+        }
         return response()->json($coaches);
     }
     protected function getAvailableUser(){
         $users = User::where('role', 'user')->get();
         $result = [];
-        foreach($users as $u){
+        $i = 0;
+        foreach($users as $key => $u){
             if($u->groups()->count() == 0){
-                $result[] = $u;
+                $result[$i] = $u->toArray();
+                $result[$i]['uid'] = $u->country_code."-".sprintf("%06d",$u->id);
+                $i++;
             }
         }
         return response()->json($result);
+    }
+    protected function getSupporter(){
+        $supporters = User::whereIn('role', ['supporter'])->get();
+        foreach($supporters as $user){
+            $user->uid = $user->country_code."-".sprintf("%06d",$user->id);
+        }
+        return response()->json($supporters);
     }
     //
     protected function createTestUser(){
@@ -290,5 +444,14 @@ class UserController extends Controller
             $user->avatar = 'https://api.givegarden.fitness/public/storage/'.$image_path;
             $user->save();
         }
+    }
+    protected function mail(){
+        $data = [];
+        Mail::send('emails.mailEvent', $data ,function($message) {
+            $message->from('noreply@givegarden.info', 'GiveGarden');
+            $message->to('tranthanhsma@gmail.com', 'ThanhNT');
+            $message->subject('Sendgrid Testing');
+        });
+        return response()->json('Mail Send Successfully');
     }
 }

@@ -17,7 +17,10 @@ use App\Http\Controllers\PostController;
 |
 */
 Route::post('/login', [UserController::class, 'login']);
-
+Route::post('/send-otp', [UserController::class, 'verifyEmail']);
+Route::post('/verify-otp', [UserController::class, 'verifyOtp']);
+Route::post('/check-cooldown', [UserController::class, 'checkCooldown']);
+Route::get('mail', [UserController::class, 'mail']);
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/user',[UserController::class, 'get']);
@@ -30,6 +33,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/users/reset-password', [UserController::class, 'resetPassword']);
 
     Route::get('/users/coaches', [UserController::class, 'getCoach']);
+    Route::get('/users/supporters', [UserController::class, 'getSupporter']);
     Route::get('/users/available-users', [UserController::class, 'getAvailableUser']);
     Route::post('/users/profile', [UserController::class, 'updateProfile']);
 
@@ -42,8 +46,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/groups/deactivate', [GroupController::class, 'deactivate']);
 
     Route::post('/groups/index', [GroupController::class, 'index']);
-    
+    Route::post('/groups/remove-user', [GroupController::class, 'removeUser']);
+    Route::post('/groups/assign-user', [GroupController::class, 'assignUser']);
+    Route::get('/group/{id}', [GroupController::class, 'detail']);
 //Post
+
     Route::post('/posts/community', [PostController::class, 'getCommunity']);
     Route::post('/posts/create', [PostController::class, 'create']);
     Route::post('/posts/comment', [PostController::class, 'createComment']);

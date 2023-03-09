@@ -9,8 +9,16 @@ class Group extends Model
 {
     use HasFactory;
     public $table = 'groups';
-    protected $fillable = ['id', 'title', 'expired_at', 'status'];
+    protected $fillable = ['id', 'title', 'expired_at', 'status','description', 'open_at'];
 
+    public function alluser(){
+        return $this->belongsToMany('App\Models\User', 'user_group', 'group_id', 'user_id')
+            ->where('users.role', 'coach')
+            ->orWhere('users.role', 'admin')
+            ->orWhere('users.role', 'user')
+            ->orWhere('users.role', 'supporter')
+            ->using('App\Models\UserGroup');
+    }
     public function users(){
         return $this->belongsToMany('App\Models\User', 'user_group', 'group_id', 'user_id')
             ->where('users.role', 'user')
@@ -18,8 +26,9 @@ class Group extends Model
     }
     public function coaches(){
         return $this->belongsToMany('App\Models\User', 'user_group', 'group_id', 'user_id')
-        ->where('users.role', 'coach')
-        ->orWhere('users.role', 'admin')
+        ->whereIn('users.role', ['admin', 'coach', 'supporter'])
+        // ->orWhere('users.role', 'admin')
+        // ->orWhere('users.role', 'supporter')
         ->using('App\Models\UserGroup');
     }
 }
