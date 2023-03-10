@@ -101,7 +101,7 @@ class UserController extends Controller
         ]);
         $user = User::where('email', $request->email)->first();
         if($user->role != 'admin'){
-            return response()->json('Only Admin Can Login');
+            return response()->json(['data'=>'Only Admin Can Login', 413]);
         }else{
             $data = [];
             Mail::send('emails.mailEvent', $data ,function($message) {
@@ -125,7 +125,7 @@ class UserController extends Controller
                 }
             }
         }
-        return response()->json(false);
+        return response()->json(['data' => 'User not exist', 413]);
     }
 
     protected function verifyEmail(Request $request){
