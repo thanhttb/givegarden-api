@@ -123,6 +123,8 @@ class UserController extends Controller
                 $cooldown = strtotime($request->sent_at) - strtotime($user->sent_at);
                 if ($cooldown < 200) {
                     return response()->json($cooldown);
+                }else{
+                    return response()->json($cooldown);
                 }
             }
         }
@@ -144,16 +146,16 @@ class UserController extends Controller
         //Check phone number
         $user = User::where('email', $request->email)->first();
         if(!$user){
-            return response()->json(['data'=>'Only Admin Can Login'], 402);
+            return response()->json(['message'=>'User not exist', 'code' => 404], 404);
         }
         if($user->role != 'admin'){
-            return response()->json(['data'=>'Only Admin Can Login'], 402);
+            return response()->json(['message'=>'Only Admin Can Login', 'code' => 403], 403);
         }else{
             $sent_at = strtotime($request->sent_at);
             //Check thời gian cooldown
             if( $user->sent_at ){
                 if( $sent_at - strtotime($user->sent_at) < 200){
-                    return response()->json(['data'=>'Mã OTP chưa hết hiệu lực'], 402);
+                    return response()->json(['message'=>'Mã OTP chưa hết hiệu lực', 'code' => 202], 202);
                 }
             }
             $otp = rand(1000,9999);
@@ -167,7 +169,7 @@ class UserController extends Controller
             $user->otp = $otp;
             $user->sent_at = date('Y-m-d h:i:s', $sent_at);
             $user->save();
-            return response()->json(['Đã gửi mã otp, vui lòng kiểm tra Email'], 200);
+            return response()->json(['message' => 'Đã gửi mã otp, vui lòng kiểm tra Email', 'code' => 200], 200);
             // try {
             //     Mail::send('emails.mailEvent', ['otp' => $otp] ,function($message) use($user) {
             //         $message->from('noreply@givegarden.info', 'GiveGarden');
@@ -215,11 +217,11 @@ class UserController extends Controller
                 ]);
             }
             else{
-                return response()->json(['cp' => '203']);
+                return response()->json(['message'=> 'Thành công','code' => '200']);
             }
         }else{
 
-            return response(['message' => 'Mã OTP không đúng vui lòng thử lại.']);
+            return response(['message' => 'Mã OTP không đúng vui lòng thử lại.', 'code'=>'401'],401);
         }
 
     }
