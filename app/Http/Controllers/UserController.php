@@ -143,7 +143,7 @@ class UserController extends Controller
         // if(! $response['success']) return response()->json('Mã Captcha không hợp lệ', 403);
         //Check phone number
         $user = User::where('email', $request->email)->first();
-        if(!user){
+        if(!$user){
             return response()->json(['data'=>'Only Admin Can Login', 413]);
         }
         if($user->role != 'admin'){
