@@ -102,7 +102,7 @@ class UserController extends Controller
         $user = User::where('email', $request->email)->first();
        
         if($user->role != 'admin'){
-            return response()->json(['data'=>'Only Admin Can Login', 413]);
+            return response()->json(['data'=>'Only Admin Can Login', 402]);
         }else{
             $data = [];
             Mail::send('emails.mailEvent', $data ,function($message) {
@@ -126,7 +126,7 @@ class UserController extends Controller
                 }
             }
         }
-        return response()->json(['data' => 'User not exist', 413]);
+        return response()->json(['data' => 'User not exist', 402]);
     }
 
     protected function verifyEmail(Request $request){
@@ -144,16 +144,16 @@ class UserController extends Controller
         //Check phone number
         $user = User::where('email', $request->email)->first();
         if(!$user){
-            return response()->json(['data'=>'Only Admin Can Login'], 413);
+            return response()->json(['data'=>'Only Admin Can Login'], 402);
         }
         if($user->role != 'admin'){
-            return response()->json(['data'=>'Only Admin Can Login'], 413);
+            return response()->json(['data'=>'Only Admin Can Login'], 402);
         }else{
             $sent_at = strtotime($request->sent_at);
             //Check thời gian cooldown
             if( $user->sent_at ){
                 if( $sent_at - strtotime($user->sent_at) < 200){
-                    return response()->json(['data'=>'Mã OTP chưa hết hiệu lực'], 413);
+                    return response()->json(['data'=>'Mã OTP chưa hết hiệu lực'], 402);
                 }
             }
             $otp = rand(1000,9999);
