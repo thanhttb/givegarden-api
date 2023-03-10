@@ -100,6 +100,9 @@ class UserController extends Controller
             // 'password' => 'required'
         ]);
         $user = User::where('email', $request->email)->first();
+        if(!user){
+            return response()->json(['data'=>'Only Admin Can Login', 413]);
+        }
         if($user->role != 'admin'){
             return response()->json(['data'=>'Only Admin Can Login', 413]);
         }else{
