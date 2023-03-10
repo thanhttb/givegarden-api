@@ -73,7 +73,7 @@ class PostController extends Controller
             $j = $i+1;
             if($files=$request->file('image_'.$j)){
                 $image_path = $files->store('image', 'public');
-                $images[]='https://api.givegarden.fitness/public/storage/'.$image_path;
+                $images[]='https://api.givegarden.info/public/storage/'.$image_path;
             }
         }
         $post->images = $images;

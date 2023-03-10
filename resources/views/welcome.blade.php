@@ -146,7 +146,7 @@
         <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
         <script>
-            var socket = io('http://socket.givegarden.fitness:6001')
+            var socket = io('http://socket.givegarden.info:6001')
             socket.on('givegarden_database_community-feed:update-feed', function(data){
                 console.log(data)
             })
