@@ -144,16 +144,16 @@ class UserController extends Controller
         //Check phone number
         $user = User::where('email', $request->email)->first();
         if(!$user){
-            return response()->json(['data'=>'Only Admin Can Login', 413]);
+            return response()->json(['data'=>'Only Admin Can Login'], 413);
         }
         if($user->role != 'admin'){
-            return response()->json('Only Admin Can Login');
+            return response()->json(['data'=>'Only Admin Can Login'], 413);
         }else{
             $sent_at = strtotime($request->sent_at);
             //Check thời gian cooldown
             if( $user->sent_at ){
                 if( $sent_at - strtotime($user->sent_at) < 200){
-                    return response()->json('Mã OTP chưa hết hiệu lực', 413);
+                    return response()->json(['data'=>'Mã OTP chưa hết hiệu lực'], 413);
                 }
             }
             $otp = rand(1000,9999);
@@ -167,7 +167,7 @@ class UserController extends Controller
             $user->otp = $otp;
             $user->sent_at = date('Y-m-d h:i:s', $sent_at);
             $user->save();
-            return response()->json('Đã gửi mã otp, vui lòng kiểm tra Email', 200);
+            return response()->json(['Đã gửi mã otp, vui lòng kiểm tra Email'], 200);
             // try {
             //     Mail::send('emails.mailEvent', ['otp' => $otp] ,function($message) use($user) {
             //         $message->from('noreply@givegarden.info', 'GiveGarden');
