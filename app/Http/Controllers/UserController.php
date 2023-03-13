@@ -167,7 +167,7 @@ class UserController extends Controller
                 $message->subject('GiveGarden Login OTP');
             });
             $user->otp = $otp;
-            $user->sent_at = date('Y-m-d h:i:s', $sent_at);
+            $user->sent_at = date('Y-m-d H:i:s', $sent_at);
             $user->save();
             return response()->json(['message' => 'Đã gửi mã otp, vui lòng kiểm tra Email', 'code' => 200], 200);
             // try {
