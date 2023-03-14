@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Post;
+use App\Models\Notification;
+use App\Models\Group;
 use App\Models\PostComment;
 use App\Models\PostReaction;
 use App\Models\User;
 use App\Events\NewPost;
 use App\Events\AllPost;
 use App\Events\UpdatePostEvent;
+use Illuminate\Support\Facades\Http;
 use Auth;
 class PostController extends Controller
 {
