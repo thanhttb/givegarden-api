@@ -11,17 +11,17 @@ class Group extends Model
     public $table = 'groups';
     protected $fillable = ['id', 'title', 'expired_at', 'status','description', 'open_at'];
 
-    public function alluser(){
-        return $this->belongsToMany('App\Models\User', 'user_group', 'group_id', 'user_id')
-            ->where('users.role', 'coach')
-            ->orWhere('users.role', 'admin')
-            ->orWhere('users.role', 'user')
-            ->orWhere('users.role', 'supporter')
-            ->using('App\Models\UserGroup');
-    }
+    // public function alluser(){
+    //     return $this->belongsToMany('App\Models\User', 'user_group', 'group_id', 'user_id')
+    //         ->where('users.role', 'coach')
+    //         ->orWhere('users.role', 'admin')
+    //         ->orWhere('users.role', 'member')
+    //         ->orWhere('users.role', 'supporter')
+    //         ->using('App\Models\UserGroup');
+    // }
     public function users(){
         return $this->belongsToMany('App\Models\User', 'user_group', 'group_id', 'user_id')
-            ->where('users.role', 'user')
+            ->where('users.role', 'member')
             ->using('App\Models\UserGroup');
     }
     public function coaches(){

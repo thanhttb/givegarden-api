@@ -11,7 +11,7 @@ use Mail;
 use Crypt;
 class UserController extends Controller
 {
-    //
+    //d
     protected function checkAuth(){
         
     }
