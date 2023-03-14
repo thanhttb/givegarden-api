@@ -15,6 +15,21 @@ class UserController extends Controller
     protected function checkAuth(){
         
     }
+    protected function updateDeviceToken(Request $request){
+        $this->validate($request, ['device_token' => 'required']);
+
+        $user = User::find(auth()->user()->id);
+        if($user){
+            //check exist device_token
+            $check = User::where('device_token', $request->device_token)->first();
+            if($check){
+                $check->device_token = NULL;
+                $check->save();
+            }
+            $user->device_token = $request->device_token;
+            $user->save();
+        }
+    }
     protected function isAdmin(User $user){
         if($user->role == 'admin'){
             return true;

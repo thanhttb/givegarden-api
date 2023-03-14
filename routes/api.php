@@ -37,6 +37,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/users/available-users', [UserController::class, 'getAvailableUser']);
     Route::post('/users/profile', [UserController::class, 'updateProfile']);
 
+    Route::post('/user/device-token', [UserController::class, 'updateDeviceToken']);
+
     // Route::post('/users/create')
 
 //Group

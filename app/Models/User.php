@@ -29,6 +29,7 @@ class User extends Authenticatable
         'country_code',
         'otp',
         'sent_at',
+        'device_token',
     ];
 
     public function groups(){

@@ -48,10 +48,12 @@ class PostController extends Controller
             'image' => 'image|mimes:jpg,png,jpeg,gif,svg|max:4024',
             'content' => 'required',
             'type' => 'required',
-
+            'is_public' => 'required',
+            'group_id' => 'required',
         ]);
         $user = User::find(auth()->user()->id);
-        $group = $user->groups()->first();
+        // $group = $user->groups()->first();
+        $group = Group::find($request->group_id);
 
         $input['content'] = $request->content;
         $input['user_id'] = $user->id;
@@ -66,7 +68,6 @@ class PostController extends Controller
         }
         $post = Post::create($input);
         //Upload Post
-        //Upload Post
         $images=array();
         for ($i=0; $i < $request->image_length; $i++) { 
             # code...
@@ -79,27 +80,58 @@ class PostController extends Controller
         $post->images = $images;
         $post->save();
 
-
-        //Return post
-        $comments = $post->comments()->orderBy('post_comments.created_at', 'DESC')->get();
-        foreach($comments as &$c){
-            $user = User::find($c->user_id);
+        $coaches = $group->coaches;
+        foreach($coaches as $c){
+            //Create Notification
+            $noti['user_id'] = $c->id;
+            $noti['event'] = 'created';
+            $noti['post_id'] = $post->id;
+            Notification::create($noti);
+            //Notify Coach & Supporter
+            $body = json_encode([
+                "to" => $c->device_token,
+                "title" => "GiveGarden",
+                "body" => $user->name . " đã tạo một bài viết.",
+                "channelId" => 'default',
+                
+            ]);
+            try{
+                $response = Http::withBody($body, 'application/json')->post('https://exp.host/--/api/v2/push/send');
+            }
+            catch (\Exception $exception) {
+                return $exception->getMessage();
+            }
             
-            $c->user_fullname = $user->name;
-            $c->user_avatar = $user->avatar;
-            $c->user_level = $user->level;
-            $c->user_avatar = $user->avatar;
+            return response()->json($body);
+            if($c->device_token){
+                
+                $response = Http::withBody($body, 'application/json')->post('https://exp.host/--/api/v2/push/send');
+            }
+            
 
         }
-        // $post->reactions = $post->reactions;
-        $post->comments = $comments->toArray();
-        $check_reaction = PostReaction::where('post_id', $post->id)->where('user_id', auth()->user()->id)->first();
-        $post->liked = false;
-        $post->reactions = $post->reactions;
-        if($check_reaction) $post->liked = true;
-        // print_r($post->toArray());
+        
 
-        event(new NewPost($post->toArray()));
+        //Return post
+        // $comments = $post->comments()->orderBy('post_comments.created_at', 'DESC')->get();
+        // foreach($comments as &$c){
+        //     $user = User::find($c->user_id);
+            
+        //     $c->user_fullname = $user->name;
+        //     $c->user_avatar = $user->avatar;
+        //     $c->user_level = $user->level;
+        //     $c->user_avatar = $user->avatar;
+
+        // }
+        // // $post->reactions = $post->reactions;
+        // $post->comments = $comments->toArray();
+        // $check_reaction = PostReaction::where('post_id', $post->id)->where('user_id', auth()->user()->id)->first();
+        // $post->liked = false;
+        // $post->reactions = $post->reactions;
+        // if($check_reaction) $post->liked = true;
+        // // print_r($post->toArray());
+
+        // event(new NewPost($post->toArray()));
     }
     protected function getCommunity(Request $request){
         // $this->validate($request, ['group_id' => 'required']);
