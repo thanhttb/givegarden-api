@@ -92,20 +92,21 @@ class PostController extends Controller
             Notification::create($noti);
             //Notify Coach & Supporter
             $body = json_encode([
-                "to" => $c->device_token,
+                "to" => 'ExponentPushToken[h-CGQHPNN2s2svF-jm9J8z]',
                 "title" => "GiveGarden",
                 "body" => $user->name . " đã tạo một bài viết.",
                 "channelId" => 'default',
                 
             ]);
-            try{
-                $response = Http::withBody($body, 'application/json')->post('https://exp.host/--/api/v2/push/send');
-            }
-            catch (\Exception $exception) {
-                return $exception->getMessage();
-            }
+            $response = Http::withBody($body, 'application/json')->post('https://exp.host/--/api/v2/push/send');
+            // try{
+                
+            // }
+            // catch (\Exception $exception) {
+            //     return $exception->getMessage();
+            // }
             
-            return response()->json($body);
+            // return response()->json($body);
             if($c->device_token){
                 
                 $response = Http::withBody($body, 'application/json')->post('https://exp.host/--/api/v2/push/send');
